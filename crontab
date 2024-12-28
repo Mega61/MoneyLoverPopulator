@@ -7,4 +7,4 @@
 # │ │ │ │ │
 # * * * * * command to execute
 
-0 0 * * * /usr/local/bin/python /app/src/main.py >> /var/log/cron.log 2>&1
+0 0 * * * /usr/local/bin/python /app/src/main.py >> /proc/1/fd/1 2>&1

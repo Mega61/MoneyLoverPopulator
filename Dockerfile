@@ -1,5 +1,5 @@
 # Use an official Python runtime as the base image
-FROM python:3.9-slim
+FROM python:3.12
 
 # Set environment variables to prevent Python from writing .pyc files and buffering stdout/stderr
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -27,8 +27,5 @@ RUN chmod 0644 /etc/cron.d/my-cron-job
 # Apply the cron job
 RUN crontab /etc/cron.d/my-cron-job
 
-# Create the log file to be able to view logs
-RUN touch /var/log/cron.log
-
-# Start cron and keep the container running
-CMD cron && tail -f /var/log/cron.log
+# Start cron in the foreground
+CMD ["cron", "-f"]
