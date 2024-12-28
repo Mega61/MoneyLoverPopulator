@@ -1,9 +1,10 @@
+import os
 from sqlalchemy import create_engine
-
+from dotenv import load_dotenv
 
 class Alchemy_engine:
 
     def create_engine():
-        engine = create_engine(
-            'postgresql://moneylover-data-analysis-bd_owner:5YRXbJmf3vxG@ep-spring-night-a5cjpiw1.us-east-2.aws.neon.tech/moneylover-data-analysis-bd', echo=True)
+        load_dotenv()
+        engine = create_engine(os.getenv('SQLALCHEMY_URI'), echo=True)
         return engine

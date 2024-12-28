@@ -6,6 +6,6 @@ if __name__ == "__main__":
     db_processor.populate_wallets()
     db_processor.populate_categories()
     end_date = datetime.now()
-    start_date = end_date - timedelta(days=3)
+    start_date = end_date - timedelta(days=30)
     db_processor.populate_transactions(start_date.strftime(
         '%Y-%m-%d'), end_date.strftime('%Y-%m-%d'))
