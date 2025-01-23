@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from models.db_engine import Alchemy_engine
 from facades.data_transformator_facade import Data_transformator
+from models.transactions_model import Transaction
 from models.wallets_model import Wallet
 from models.wallets_categories_model import Wallet_Category
 
@@ -17,8 +18,21 @@ class DB_processor:
 
     def populate_transactions(self, start_date, end_date):
         session = Session(bind=Alchemy_engine.create_engine())
-        for transaction in self.data_processor.transaction_parsing(start_date, end_date):
-            session.merge(transaction)
+        # Get DB transactions
+        existing_transactions = set(tx.id for tx in session.query(Transaction.id).all())
+        # Get new API transactions
+        new_transactions = list(self.data_processor.transaction_parsing(start_date, end_date))
+        new_transactions_ids = set(tx.id for tx in new_transactions)
+        
+        # Match DB transactions to API transactions
+        transactions_to_delete = existing_transactions - new_transactions_ids
+        
+        # Delete if differences found
+        if transactions_to_delete:
+            session.query(Transaction).filter(Transaction.id.in_(transactions_to_delete)).delete(synchronize_session=False)
+        
+        for transaction in new_transactions:
+            session.merge(transaction)  
         session.commit()
 
 # All the categories are going to be based of the @efectivo wallet, including the @efectivo subcategory
@@ -30,4 +44,3 @@ class DB_processor:
             for wallet_id in wallet_ids:
                 session.merge(Wallet_Category(wallet_id=wallet_id[0], category_id=category.name))
         session.commit()
-        
